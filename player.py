@@ -2,8 +2,7 @@ import pygame
 
 pygame.init()
 
-def WASDmovement(clock, player_speed, player_rect, player_position, WIDTH, HEIGHT):
-    dt = clock.tick(60) / 1000
+def WASDmovement(dt, player_speed, player_rect, player_position, WIDTH, HEIGHT):
     
     keys = pygame.key.get_pressed()
     direction = pygame.Vector2(0, 0)

@@ -2,8 +2,7 @@ import pygame
 
 pygame.init()
 
-def enemymovement(clock, player_position, enemy_position, enemy_speed, enemy_rect):
-    dt = clock.tick(60) / 1000
+def enemymovement(dt, player_position, enemy_position, enemy_speed, enemy_rect):
 
     enemy_direction = player_position - enemy_position
 

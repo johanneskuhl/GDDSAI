@@ -48,23 +48,25 @@ enemy_position = pygame.Vector2(enemy_rect.center)
 enemy_speed = 250 # p/s
 
 
-while running:
+while True:
     #EVENT LOOP
     for event in pygame.event.get():
 
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+    dt = clock.tick(60) / 1000
 
-    player_rect = WASDmovement(clock, player_speed, player_rect, player_position, WIDTH, HEIGHT)
+    if running: 
+        player_rect = WASDmovement(dt, player_speed, player_rect, player_position, WIDTH, HEIGHT)
 
-    enemy_rect = enemymovement(clock, player_position, enemy_position, enemy_speed, enemy_rect)
+        enemy_rect = enemymovement(dt, player_position, enemy_position, enemy_speed, enemy_rect)
 
-    distance = player_position.distance_to(enemy_position)
-        
-    screen.fill((0, 0, 0))
-    screen.blit(player_surf, player_rect)
-    screen.blit(enemy_surf, enemy_rect)
+        distance = player_position.distance_to(enemy_position)
+            
+        screen.fill((0, 0, 0))
+        screen.blit(player_surf, player_rect)
+        screen.blit(enemy_surf, enemy_rect)
     if distance <= PLAYER_RADIUS * 2:
         create_gameover(screen)
         running = False
