@@ -19,7 +19,7 @@ PLAYER_SIZE = PLAYER_RADIUS * 2
 x = WIDTH // 2
 y = HEIGHT // 2
 running = True
-
+GAMESTATE = "ACTIVE"
 
 def create_gameover(screen):
     screen.fill((0, 0, 0))
@@ -27,6 +27,13 @@ def create_gameover(screen):
     gameover_text = font.render("GAME OVER", True, "White")
     textrect = gameover_text.get_rect(center=(x, y))
     screen.blit(gameover_text, textrect)
+
+def reset_screen(enemy_rect, player_rect, enemy_position, player_position):
+    enemy_position.update(0, y)
+    player_position.update(x, y)
+
+    enemy_rect.center = enemy_position
+    player_rect.center = player_position
 
 
 
@@ -55,9 +62,20 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+        if GAMESTATE == "GAMEOVER":
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    GAMESTATE = "ACTIVE"
+                    reset_screen(enemy_rect, player_rect, enemy_position, player_position)
+
     dt = clock.tick(60) / 1000
 
-    if running: 
+    keys = pygame.key.get_pressed()
+
+    if GAMESTATE == "GAMEOVER":
+        create_gameover(screen)
+
+    if GAMESTATE == "ACTIVE": 
         player_rect = WASDmovement(dt, player_speed, player_rect, player_position, WIDTH, HEIGHT)
 
         enemy_rect = enemymovement(dt, player_position, enemy_position, enemy_speed, enemy_rect)
@@ -67,9 +85,10 @@ while True:
         screen.fill((0, 0, 0))
         screen.blit(player_surf, player_rect)
         screen.blit(enemy_surf, enemy_rect)
-    if distance <= PLAYER_RADIUS * 2:
-        create_gameover(screen)
-        running = False
+
+        if distance <= PLAYER_RADIUS * 2:
+            GAMESTATE = "GAMEOVER"
+
     
     pygame.display.update()
     
