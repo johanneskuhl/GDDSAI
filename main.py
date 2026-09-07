@@ -182,7 +182,6 @@ while True:
                 break
 
 
-
     
     pygame.display.update()
     
