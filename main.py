@@ -37,7 +37,7 @@ def create_gameover(screen, survival_time):
     gameover_text_rect = gameover_text.get_rect(center=(x, y))
 
     # timer text
-    timer_text = timer_font.render(f"YOU SURVIVED {survival_time} SECONDS", True, "White")
+    timer_text = timer_font.render(f"YOU SURVIVED {survival_time:.1f} SECONDS", True, "White")
     timer_text_rect = timer_text.get_rect(center=(x, y + 80))
 
     # restart text
@@ -48,13 +48,6 @@ def create_gameover(screen, survival_time):
     screen.blit(gameover_text, gameover_text_rect)
     screen.blit(timer_text, timer_text_rect)
     screen.blit(restart_text, restart_text_rect)
-
-def reset_screen(enemy_rect, player_rect, enemy_position, player_position):
-    enemy_position.update(0, y)
-    player_position.update(x, y)
-
-    enemy_rect.center = enemy_position
-    player_rect.center = player_position
 
 def create_enemy():
     start_x, start_y = choose_start_pos()
@@ -91,6 +84,13 @@ def choose_start_pos():
         start_y = random.randint(0, HEIGHT)
 
     return start_x, start_y
+
+def save_run(survival_time, enemy_count, spawn_interval):
+    print(f"Survived for {survival_time:.1f} seconds\n"
+          f"There were {enemy_count} enemies\n"
+          f"The spawn interval was {spawn_interval}"
+)
+
 
 # PLAYER
 player_surf = pygame.Surface((PLAYER_SIZE, PLAYER_SIZE), pygame.SRCALPHA)
@@ -132,7 +132,6 @@ while True:
 
     dt = clock.tick(60) / 1000
 
-    keys = pygame.key.get_pressed()
     if GAMESTATE == "GAMEOVER":
         create_gameover(screen, survival_time)
 
@@ -154,6 +153,8 @@ while True:
         if spawn_timer >= spawn_interval:
             enemies.append(create_enemy())
             spawn_timer -= spawn_interval
+
+        enemy_count = len(enemies)
 
         screen.fill((0, 0, 0))
 
@@ -179,6 +180,7 @@ while True:
 
             if distance <= PLAYER_RADIUS * 2:
                 GAMESTATE = "GAMEOVER"
+                save_run(survival_time, enemy_count, spawn_interval)
                 break
 
 
