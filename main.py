@@ -152,7 +152,7 @@ while True:
         spawn_timer += dt
 
         if spawn_timer >= spawn_interval:
-            enemies.append(create_enemy())``
+            enemies.append(create_enemy())
             spawn_timer -= spawn_interval
 
         screen.fill((0, 0, 0))
