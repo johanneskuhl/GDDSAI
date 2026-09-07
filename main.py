@@ -1,5 +1,7 @@
 import pygame
 
+import random
+
 from player import (
     WASDmovement
 )
@@ -54,21 +56,56 @@ def reset_screen(enemy_rect, player_rect, enemy_position, player_position):
     enemy_rect.center = enemy_position
     player_rect.center = player_position
 
+def create_enemy():
+    start_x, start_y = choose_start_pos()
+
+    rect = enemy_surf.get_rect(
+        center=(start_x, start_y)
+    )
+
+    position = pygame.Vector2(rect.center)
+
+    enemy_dict = {
+        "surface": enemy_surf,
+        "rect": rect,
+        "position": position,
+        "speed": 150,
+    }
+
+    return enemy_dict
+
+def choose_start_pos():
+    side = random.choice(["TOP", "BOTTOM", "LEFT", "RIGHT"])
+
+    if side == "TOP":
+        start_x = random.randint(0, WIDTH)
+        start_y = 0 - PLAYER_RADIUS
+    elif side == "BOTTOM":
+        start_x = random.randint(0, WIDTH)
+        start_y = HEIGHT + PLAYER_RADIUS
+    elif side == "LEFT":
+        start_x = 0 - PLAYER_RADIUS
+        start_y = random.randint(0, HEIGHT)
+    else: #side == "RIGHT"
+        start_x = WIDTH + PLAYER_RADIUS
+        start_y = random.randint(0, HEIGHT)
+
+    return start_x, start_y
 
 # PLAYER
 player_surf = pygame.Surface((PLAYER_SIZE, PLAYER_SIZE), pygame.SRCALPHA)
 pygame.draw.circle(player_surf, "White", (PLAYER_RADIUS, PLAYER_RADIUS), PLAYER_RADIUS)
 player_rect = player_surf.get_rect(center=(x, y))
 player_position = pygame.Vector2(player_rect.center)
-player_speed = 150 # p/s
+player_speed = 250 # p/s
 
 
 # ENEMY
 enemy_surf = pygame.Surface((PLAYER_SIZE, PLAYER_SIZE), pygame.SRCALPHA)
 pygame.draw.circle(enemy_surf, "Blue", (PLAYER_RADIUS, PLAYER_RADIUS), PLAYER_RADIUS)
-enemy_rect = enemy_surf.get_rect(center=(0, y))
-enemy_position = pygame.Vector2(enemy_rect.center)
-enemy_speed = 130 # p/s
+enemies = [create_enemy()]
+spawn_timer = 0
+spawn_interval = 2.0
 
 
 while True:
@@ -82,34 +119,69 @@ while True:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     GAMESTATE = "ACTIVE"
-                    reset_screen(enemy_rect, player_rect, enemy_position, player_position)
+
+                    player_position.update(x, y)
+                    player_rect.center = player_position
+
+                    enemies.clear()
+                    enemies.append(create_enemy())
+
+                    spawn_timer = 0
                     start_time = pygame.time.get_ticks()
                     survival_time = 0
 
     dt = clock.tick(60) / 1000
 
     keys = pygame.key.get_pressed()
-
     if GAMESTATE == "GAMEOVER":
         create_gameover(screen, survival_time)
 
-    if GAMESTATE == "ACTIVE": 
+    if GAMESTATE == "ACTIVE":
         current_time = pygame.time.get_ticks()
-
         survival_time = (current_time - start_time) / 1000
 
-        player_rect = WASDmovement(dt, player_speed, player_rect, player_position, WIDTH, HEIGHT)
+        player_rect = WASDmovement(
+            dt,
+            player_speed,
+            player_rect,
+            player_position,
+            WIDTH,
+            HEIGHT,
+        )
 
-        enemy_rect = enemymovement(dt, player_position, enemy_position, enemy_speed, enemy_rect)
+        spawn_timer += dt
 
-        distance = player_position.distance_to(enemy_position)
-            
+        if spawn_timer >= spawn_interval:
+            enemies.append(create_enemy())
+            spawn_timer -= spawn_interval
+
         screen.fill((0, 0, 0))
-        screen.blit(player_surf, player_rect)
-        screen.blit(enemy_surf, enemy_rect)
 
-        if distance <= PLAYER_RADIUS * 2:
-            GAMESTATE = "GAMEOVER"
+        screen.blit(player_surf, player_rect)
+
+        for enemy in enemies:
+            enemy["rect"] = enemymovement(
+                dt,
+                player_position,
+                enemy["position"],
+                enemy["speed"],
+                enemy["rect"],
+            )
+
+            screen.blit(
+                enemy["surface"],
+                enemy["rect"],
+            )
+
+            distance = player_position.distance_to(
+                enemy["position"]
+            )
+
+            if distance <= PLAYER_RADIUS * 2:
+                GAMESTATE = "GAMEOVER"
+                break
+
+
 
     
     pygame.display.update()
