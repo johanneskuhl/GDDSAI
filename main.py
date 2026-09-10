@@ -2,6 +2,8 @@ import pygame
 
 import random
 
+import csv 
+
 from player import (
     WASDmovement
 )
@@ -27,6 +29,8 @@ GAMESTATE = "ACTIVE"
 start_time = pygame.time.get_ticks()
 survival_time = 0
 timer_font = pygame.font.Font(None, 50)
+# for data/csv stuff
+filename = "runs.csv"
 
 
 def create_gameover(screen, survival_time):
@@ -86,10 +90,13 @@ def choose_start_pos():
     return start_x, start_y
 
 def save_run(survival_time, enemy_count, spawn_interval):
-    print(f"Survived for {survival_time:.1f} seconds\n"
-          f"There were {enemy_count} enemies\n"
-          f"The spawn interval was {spawn_interval}"
-)
+    with open(f"data/{filename}", "a", newline = "") as runs:            
+        csvwriter = csv.writer(runs)
+
+        if runs.tell() == 0:
+            csvwriter.writerow(["survival time", "enemy count", "spawn interval"])
+        
+        csvwriter.writerow([survival_time, enemy_count, spawn_interval])
 
 
 # PLAYER
