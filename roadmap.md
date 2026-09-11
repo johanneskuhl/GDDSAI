@@ -46,7 +46,7 @@ Een CSV-reader gebruiken, de kopregel overslaan, lijsten indexeren en tekst naar
 
 **Einddoel:** een apart analyseprogramma verzamelt alle overlevingstijden als getallen in een lijst.
 
-### 9. Eerste statistieken - []
+### 9. Eerste statistieken - [x]
 Aantal pogingen, gemiddelde, mediaan, minimum en maximum leren berekenen en interpreteren.
 
 **Einddoel:** je analyseprogramma geeft een begrijpelijk overzicht van je resultaten, ook als er nog geen pogingen zijn.
