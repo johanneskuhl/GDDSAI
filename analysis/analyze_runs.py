@@ -2,7 +2,7 @@ import csv
 
 import os
 
-survivaltime_list = []
+survtime_dict = {}
 
 if os.path.isfile("data/runs.csv"):
     with open("data/runs.csv", "r") as runs:
@@ -10,27 +10,28 @@ if os.path.isfile("data/runs.csv"):
 
         next(csvreader, None)
 
-        for row in csvreader:
-            if len(row) != 3:
+        for pogingnummer, row in enumerate(csvreader, start=1):
+            if len(row) < 3:
                 continue
             try:
                 survtime = float(row[0])
             except ValueError:
                 continue
             if survtime >= 0:
-                survivaltime_list.append(survtime)
+                survtime_dict[pogingnummer] = survtime
+            
 
-if len(survivaltime_list) == 0:
+if len(survtime_dict) == 0:
     print("no correct attempts made yet")
 else:
-    pogingen = len(survivaltime_list)
-    gemiddelde_st = sum(survivaltime_list) / pogingen
-    min_st = min(survivaltime_list)
-
-    best_attempt, max_st = 1, survivaltime_list[0]
-    for i, v in enumerate(survivaltime_list, start=1):
-        if v > max_st:
-            best_attempt, max_st = i, v
+    pogingen = len(survtime_dict)
+    gemiddelde_st = sum(survtime_dict.values()) / pogingen
+    best_attempt = 0
+    max_st = 0
+    for pogingnummer, survtime in survtime_dict.items():
+        if survtime > max_st:
+            max_st = survtime
+            best_attempt = pogingnummer
 
     print(f"attempts: {pogingen}, average survival time: {gemiddelde_st}, best attempt: attempt {best_attempt} survival time {max_st}")
-    print(survivaltime_list)
+    print(survtime_dict)
