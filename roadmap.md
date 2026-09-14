@@ -51,12 +51,12 @@ Aantal pogingen, gemiddelde, mediaan, minimum en maximum leren berekenen en inte
 
 **Einddoel:** je analyseprogramma geeft een begrijpelijk overzicht van je resultaten, ook als er nog geen pogingen zijn.
 
-### 10. Datakwaliteit controleren - []
+### 10. Datakwaliteit controleren - [x]
 Omgaan met lege regels, ontbrekende waarden en ongeldige getallen. Eenheden en kolomnamen consequent gebruiken.
 
 **Einddoel:** je weet welke gegevens bruikbaar zijn en je analyse loopt niet onverwacht vast op een verkeerde rij.
 
-### 11. Eerste grafieken - []
+### 11. Eerste grafieken - [x]
 Met Matplotlib resultaten zichtbaar maken: overlevingstijd per poging en de verdeling van overlevingstijden.
 
 **Einddoel:** je maakt twee leesbare grafieken met titels, asnamen en eenheden, en legt uit wat ze laten zien.

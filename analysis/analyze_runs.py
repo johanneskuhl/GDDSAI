@@ -2,6 +2,8 @@ import csv
 
 import os
 
+import matplotlib.pyplot as plt
+
 survtime_dict = {}
 
 if os.path.isfile("data/runs.csv"):
@@ -24,6 +26,7 @@ if os.path.isfile("data/runs.csv"):
 if len(survtime_dict) == 0:
     print("no correct attempts made yet")
 else:
+    # print message and data
     pogingen = len(survtime_dict)
     gemiddelde_st = sum(survtime_dict.values()) / pogingen
     best_attempt = 0
@@ -35,3 +38,19 @@ else:
 
     print(f"attempts: {pogingen}, average survival time: {gemiddelde_st}, best attempt: attempt {best_attempt} survival time {max_st}")
     print(survtime_dict)
+
+    # graph
+    plotsurvtime = []
+    attempts = []
+    for attempt, plot_st in survtime_dict.items():
+        attempts.append(attempt)
+        plotsurvtime.append(plot_st)
+    fig, ax = plt.subplots()
+    ax.plot(attempts, plotsurvtime, marker='o', label="Data Points")
+
+    ax.set_title("survival times")
+    ax.set_xlabel("attempt")
+    ax.set_ylabel("survival time")
+
+    ax.legend()
+    plt.show()
