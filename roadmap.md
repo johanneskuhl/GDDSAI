@@ -33,7 +33,7 @@ De duur van een poging meten en tonen.
 
 **Einddoel:** iedere poging krijgt een eindtijd die bij game over stopt en bij herstart wordt gereset.
 
-## Fase 2 — Gegevens opslaan en begrijpen - []
+## Fase 2 — Gegevens opslaan en begrijpen - [x]
 *Hier zijn we nu.*
 
 ### 7. Resultaten opslaan - [x]
@@ -61,7 +61,7 @@ Met Matplotlib resultaten zichtbaar maken: overlevingstijd per poging en de verd
 
 **Einddoel:** je maakt twee leesbare grafieken met titels, asnamen en eenheden, en legt uit wat ze laten zien.
 
-### 12. Analyseren met pandas - []
+### 12. Analyseren met pandas - [x]
 Dezelfde gegevens als een tabel inladen, kolommen selecteren, filteren en samenvatten.
 
 **Einddoel:** je kunt je eerdere analyse met pandas uitvoeren en begrijpt hoe dat aansluit op je eigen Python-berekeningen.
