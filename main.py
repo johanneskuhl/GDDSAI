@@ -17,7 +17,6 @@ pygame.init()
 WIDTH = 800
 HEIGHT = 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-clock = pygame.time.Clock()
 # for player/enemy
 PLAYER_RADIUS = 25
 PLAYER_SIZE = PLAYER_RADIUS * 2
@@ -26,7 +25,6 @@ y = HEIGHT // 2
 # for gamerunning
 GAMESTATE = "ACTIVE"
 # timer for score
-start_time = pygame.time.get_ticks()
 survival_time = 0
 timer_font = pygame.font.Font(None, 50)
 # for data/csv stuff
@@ -47,7 +45,7 @@ difficulty_dict = {
     }
 }
 # gekozen diff
-chosen_diff = "hard"
+chosen_diff = input("easy, medium or hard? ")
 
 def create_gameover(screen, survival_time):
     screen.fill((0, 0, 0))
@@ -129,8 +127,10 @@ pygame.draw.circle(enemy_surf, "Blue", (PLAYER_RADIUS, PLAYER_RADIUS), PLAYER_RA
 enemies = [create_enemy(difficulty_dict[chosen_diff]["enemy speed"])]
 spawn_timer = 0
 
-
-
+# timer
+clock = pygame.time.Clock()
+start_time = pygame.time.get_ticks()
+survival_time = 0
 
 while True:
     #EVENT LOOP
