@@ -31,7 +31,23 @@ survival_time = 0
 timer_font = pygame.font.Font(None, 50)
 # for data/csv stuff
 filename = "runs.csv"
-
+# difficulty regelen
+difficulty_dict = {
+    "easy": {
+        "enemy speed": 120, #p/s
+        "spawn interval": 3 # sec/enem
+    }, 
+    "medium": {
+        "enemy speed": 150, #p/s
+        "spawn interval": 2 # sec/enem
+    },
+    "hard": {
+        "enemy speed": 180, #p/s
+        "spawn interval": 1 # sec/enem
+    }
+}
+# gekozen diff
+chosen_diff = "hard"
 
 def create_gameover(screen, survival_time):
     screen.fill((0, 0, 0))
@@ -53,7 +69,7 @@ def create_gameover(screen, survival_time):
     screen.blit(timer_text, timer_text_rect)
     screen.blit(restart_text, restart_text_rect)
 
-def create_enemy():
+def create_enemy(speed):
     start_x, start_y = choose_start_pos()
 
     rect = enemy_surf.get_rect(
@@ -66,7 +82,7 @@ def create_enemy():
         "surface": enemy_surf,
         "rect": rect,
         "position": position,
-        "speed": 150,
+        "speed": speed
     }
 
     return enemy_dict
@@ -94,9 +110,9 @@ def save_run(survival_time, enemy_count, spawn_interval):
         csvwriter = csv.writer(runs)
 
         if runs.tell() == 0:
-            csvwriter.writerow(["survival time", "enemy count", "spawn interval"])
+            csvwriter.writerow(["survival time", "enemy count", "spawn interval", "difficulty"])
         
-        csvwriter.writerow([survival_time, enemy_count, spawn_interval])
+        csvwriter.writerow([survival_time, enemy_count, spawn_interval, chosen_diff])
 
 
 # PLAYER
@@ -110,9 +126,10 @@ player_speed = 250 # p/s
 # ENEMY
 enemy_surf = pygame.Surface((PLAYER_SIZE, PLAYER_SIZE), pygame.SRCALPHA)
 pygame.draw.circle(enemy_surf, "Blue", (PLAYER_RADIUS, PLAYER_RADIUS), PLAYER_RADIUS)
-enemies = [create_enemy()]
+enemies = [create_enemy(difficulty_dict[chosen_diff]["enemy speed"])]
 spawn_timer = 0
-spawn_interval = 2.0
+
+
 
 
 while True:
@@ -131,7 +148,7 @@ while True:
                     player_rect.center = player_position
 
                     enemies.clear()
-                    enemies.append(create_enemy())
+                    enemies.append(create_enemy(difficulty_dict[chosen_diff]["enemy speed"]))
 
                     spawn_timer = 0
                     start_time = pygame.time.get_ticks()
@@ -157,9 +174,9 @@ while True:
 
         spawn_timer += dt
 
-        if spawn_timer >= spawn_interval:
-            enemies.append(create_enemy())
-            spawn_timer -= spawn_interval
+        if spawn_timer >= difficulty_dict[chosen_diff]["spawn interval"]:
+            enemies.append(create_enemy(difficulty_dict[chosen_diff]["enemy speed"]))
+            spawn_timer -= difficulty_dict[chosen_diff]["spawn interval"]
 
         enemy_count = len(enemies)
 
@@ -187,7 +204,7 @@ while True:
 
             if distance <= PLAYER_RADIUS * 2:
                 GAMESTATE = "GAMEOVER"
-                save_run(survival_time, enemy_count, spawn_interval)
+                save_run(survival_time, enemy_count, difficulty_dict[chosen_diff]["spawn interval"])
                 break
 
 
