@@ -22,8 +22,8 @@ PLAYER_RADIUS = 25
 PLAYER_SIZE = PLAYER_RADIUS * 2
 x = WIDTH // 2
 y = HEIGHT // 2
-# for gamerunning
-GAMESTATE = "ACTIVE"
+# for gamerunning 
+GAMESTATE = "STARTSCREEN"
 # timer for score
 survival_time = 0
 timer_font = pygame.font.Font(None, 50)
@@ -45,7 +45,7 @@ difficulty_dict = {
     }
 }
 # gekozen diff
-chosen_diff = input("easy, medium or hard? ")
+diff = ""
 
 def create_gameover(screen, survival_time):
     screen.fill((0, 0, 0))
@@ -66,6 +66,49 @@ def create_gameover(screen, survival_time):
     screen.blit(gameover_text, gameover_text_rect)
     screen.blit(timer_text, timer_text_rect)
     screen.blit(restart_text, restart_text_rect)
+
+def create_startscreen(screen):
+    screen.fill((0, 0, 0))
+    font = pygame.font.Font(None, 100)
+
+    # explain options
+    diff_choose_text = font.render("Choose difficulty:", True, "White")
+    diff_choose_text_rect = diff_choose_text.get_rect(center=(x, y - 150))
+
+    # button for easy mode
+    Easy_mode_button_rect = button("Easy", 150, y + 50, "White", "Black", 50)
+
+    # button medium 
+    Medium_mode_button_rect = button("Medium", 350, y + 50, "White", "Black", 50)
+
+    # button hard
+    Hard_mode_button_rect = button("Hard", 550, y + 50, "White", "Black", 50)
+
+    # start button
+    Start_button_rect = button("READY", 600, y + 200, "White", "Green", 50)
+
+    screen.blit(diff_choose_text, diff_choose_text_rect)
+    return (
+        Easy_mode_button_rect,
+        Medium_mode_button_rect,
+        Hard_mode_button_rect,
+        Start_button_rect
+    )
+
+def button(text, x, y, color, back_color, text_size):
+    font = pygame.font.Font(None, text_size)
+    text_surf = font.render(text, True, color)
+
+    width = text_surf.get_width() + 40
+    height = text_surf.get_height() + 20
+
+    rect = pygame.Rect(x, y, width, height)
+    pygame.draw.rect(screen, back_color, rect, border_radius=20)
+
+    text_rect = text_surf.get_rect(center=rect.center)
+    screen.blit(text_surf, text_rect)
+
+    return rect
 
 def create_enemy(speed):
     start_x, start_y = choose_start_pos()
@@ -110,7 +153,7 @@ def save_run(survival_time, enemy_count, spawn_interval):
         if runs.tell() == 0:
             csvwriter.writerow(["survival time", "enemy count", "spawn interval", "difficulty"])
         
-        csvwriter.writerow([survival_time, enemy_count, spawn_interval, chosen_diff])
+        csvwriter.writerow([survival_time, enemy_count, spawn_interval, diff])
 
 
 # PLAYER
@@ -124,8 +167,8 @@ player_speed = 250 # p/s
 # ENEMY
 enemy_surf = pygame.Surface((PLAYER_SIZE, PLAYER_SIZE), pygame.SRCALPHA)
 pygame.draw.circle(enemy_surf, "Blue", (PLAYER_RADIUS, PLAYER_RADIUS), PLAYER_RADIUS)
-enemies = [create_enemy(difficulty_dict[chosen_diff]["enemy speed"])]
 spawn_timer = 0
+enemies = []
 
 # timer
 clock = pygame.time.Clock()
@@ -136,7 +179,7 @@ while True:
     #EVENT LOOP
     for event in pygame.event.get():
 
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE) :
             pygame.quit()
             exit()
         if GAMESTATE == "GAMEOVER":
@@ -148,18 +191,42 @@ while True:
                     player_rect.center = player_position
 
                     enemies.clear()
-                    enemies.append(create_enemy(difficulty_dict[chosen_diff]["enemy speed"]))
+                    enemies.append(create_enemy(difficulty_dict[diff]["enemy speed"]))
 
                     spawn_timer = 0
                     start_time = pygame.time.get_ticks()
                     survival_time = 0
+
+        if GAMESTATE == "STARTSCREEN":
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if Easy_mode_button_rect.collidepoint(event.pos):
+                    diff = "easy"
+                if Medium_mode_button_rect.collidepoint(event.pos):
+                    diff = "medium"
+                if Hard_mode_button_rect.collidepoint(event.pos):
+                    diff = "hard"
+                if diff:
+                    if Start_button_rect.collidepoint(event.pos):
+                        GAMESTATE = "ACTIVE"
+
 
     dt = clock.tick(60) / 1000
 
     if GAMESTATE == "GAMEOVER":
         create_gameover(screen, survival_time)
 
+    if GAMESTATE == "STARTSCREEN":
+        (
+        Easy_mode_button_rect,
+        Medium_mode_button_rect,
+        Hard_mode_button_rect,
+        Start_button_rect
+    ) = create_startscreen(screen)
+
     if GAMESTATE == "ACTIVE":
+        if not enemies:
+            enemies = [create_enemy(difficulty_dict[diff]["enemy speed"])]
+
         current_time = pygame.time.get_ticks()
         survival_time = (current_time - start_time) / 1000
 
@@ -174,9 +241,9 @@ while True:
 
         spawn_timer += dt
 
-        if spawn_timer >= difficulty_dict[chosen_diff]["spawn interval"]:
-            enemies.append(create_enemy(difficulty_dict[chosen_diff]["enemy speed"]))
-            spawn_timer -= difficulty_dict[chosen_diff]["spawn interval"]
+        if spawn_timer >= difficulty_dict[diff]["spawn interval"]:
+            enemies.append(create_enemy(difficulty_dict[diff]["enemy speed"]))
+            spawn_timer -= difficulty_dict[diff]["spawn interval"]
 
         enemy_count = len(enemies)
 
@@ -204,7 +271,7 @@ while True:
 
             if distance <= PLAYER_RADIUS * 2:
                 GAMESTATE = "GAMEOVER"
-                save_run(survival_time, enemy_count, difficulty_dict[chosen_diff]["spawn interval"])
+                save_run(survival_time, enemy_count, difficulty_dict[diff]["spawn interval"])
                 break
 
 

@@ -68,7 +68,7 @@ Dezelfde gegevens als een tabel inladen, kolommen selecteren, filteren en samenv
 
 ## Fase 3 — De game als experiment - []
 
-### 13. Moeilijkheidsinstellingen - []
+### 13. Moeilijkheidsinstellingen - [x]
 Instelbare vijandsnelheid en spawninterval toevoegen. De gebruikte instellingen bij iedere poging opslaan.
 
 **Einddoel:** je kunt meerdere moeilijkheidsniveaus spelen en achteraf zien onder welke instellingen iedere poging plaatsvond.
